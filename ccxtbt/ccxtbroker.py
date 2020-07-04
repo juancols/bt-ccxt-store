@@ -252,6 +252,10 @@ class CCXTBroker(with_metaclass(MetaCCXTBroker, BrokerBase)):
              exectype=None, valid=None, tradeid=0, oco=None,
              trailamount=None, trailpercent=None,
              **kwargs):
+        # Add stopPrice to list of params to be used by Binance create_order
+        if exectype == Order.StopLimit and plimit != None:
+            params = dict(stopPrice=plimit)
+            kwargs.update(params)
         del kwargs['parent']
         del kwargs['transmit']
         return self._submit(owner, data, exectype, 'sell', size, price, kwargs)
