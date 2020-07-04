@@ -195,7 +195,13 @@ class CCXTBroker(with_metaclass(MetaCCXTBroker, BrokerBase)):
             ccxt_order = self.store.fetch_order(oID, o_order.data.p.dataname)
 
             # Check for new fills
-            if 'trades' in ccxt_order:
+            '''
+            Issue with:
+            line 199, in next, for fill in ccxt_order['trades']: TypeError: 'NoneType' object is not iterable
+            Solution suggested by JzINSA in:
+            https://github.com/Dave-Vallance/bt-ccxt-store/issues/27#issuecomment-635114060
+            '''
+            if 'trades' in ccxt_order and ccxt_order['trades'] != None:
                 for fill in ccxt_order['trades']:
                     if fill not in o_order.executed_fills:
                         o_order.execute(fill['datetime'], fill['amount'], fill['price'],
