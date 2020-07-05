@@ -223,6 +223,12 @@ class CCXTBroker(with_metaclass(MetaCCXTBroker, BrokerBase)):
                 self.open_orders.remove(o_order)
                 self.get_balance()
 
+            # Manage case when an order is being Canceled from the Exchange
+            if ccxt_order[self.mappings['canceled_order']['key']] == self.mappings['canceled_order']['value']:
+                self.open_orders.remove(o_order)
+                o_order.cancel()
+                self.notify(o_order)
+
     def _submit(self, owner, data, exectype, side, amount, price, params):
         order_type = self.order_types.get(exectype) if exectype else 'market'
         created = int(data.datetime.datetime(0).timestamp()*1000)
